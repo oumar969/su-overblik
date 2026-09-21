@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+.sites-package/
+su-overblik.tar.gz
+.sites-package-v2/
+su-overblik-v2.tar.gz
+web/.openai/

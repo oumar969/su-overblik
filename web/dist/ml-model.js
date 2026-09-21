@@ -1,0 +1,151 @@
+window.SU_MODEL = {
+  "label": "SIMULEREDE SCENARIER – IKKE PERSONDATA",
+  "seed": 42,
+  "samples": 5000,
+  "train_count": 4000,
+  "test_count": 1000,
+  "method": "Lineær regression med seks inputfeatures, trænet med mindste kvadraters metode",
+  "target": "Gæld ved studieslut i kroner med fast 4 % studierente",
+  "features": [
+    "loan",
+    "months",
+    "initial",
+    "loan_months",
+    "initial_months",
+    "loan_months_squared"
+  ],
+  "means": [
+    1906.12275,
+    42.0505,
+    49630.97025,
+    80385.95725,
+    2086797.532,
+    4510354.22725
+  ],
+  "scales": [
+    1103.6473142188308,
+    24.08859584429939,
+    28556.406184958993,
+    71237.90845043387,
+    1829511.1891726973,
+    5420349.313791496
+  ],
+  "coefficients": [
+    145866.70800750004,
+    238.198270242734,
+    -3.134603107178009,
+    28347.056631302356,
+    69968.0988024049,
+    7012.705007264503,
+    11102.639375188397
+  ],
+  "ranges": {
+    "loan": [
+      0,
+      3799
+    ],
+    "months": [
+      1,
+      84
+    ],
+    "initial": [
+      0,
+      100000
+    ]
+  },
+  "metrics": {
+    "mae": 103.48802994579074,
+    "rmse": 138.82999260451686,
+    "max_error": 651.844662630203,
+    "baseline_mae": 70579.026329395,
+    "exact_mae": 0
+  },
+  "limitations": [
+    "Simulerede og uafhængigt uniformt fordelte input er ikke repræsentative for studerende.",
+    "Resultatet måler efterligning af en beregner, ikke betalingsrisiko.",
+    "Den præcise beregner er facit og bør bruges i produktet.",
+    "Ingen modelvalg eller tuning på testdata. Ingen dokumentation for generalisering til virkelige personer."
+  ],
+  "sample_predictions": [
+    {
+      "actual": 262842.06,
+      "predicted": 263035.6893265144
+    },
+    {
+      "actual": 92821.7,
+      "predicted": 92628.20474102462
+    },
+    {
+      "actual": 222933.36,
+      "predicted": 223001.4070246503
+    },
+    {
+      "actual": 133962.87,
+      "predicted": 133855.57271181222
+    },
+    {
+      "actual": 69202.36,
+      "predicted": 69102.03871298794
+    },
+    {
+      "actual": 68610.65,
+      "predicted": 68517.84105089573
+    },
+    {
+      "actual": 81322.17,
+      "predicted": 81280.18857734649
+    },
+    {
+      "actual": 231465.24,
+      "predicted": 231590.1976163233
+    },
+    {
+      "actual": 126536.29,
+      "predicted": 126509.75788570022
+    },
+    {
+      "actual": 172300.18,
+      "predicted": 172168.84836070926
+    },
+    {
+      "actual": 1626.31,
+      "predicted": 1623.1490167741358
+    },
+    {
+      "actual": 128419.55,
+      "predicted": 128207.30713718665
+    },
+    {
+      "actual": 191432.93,
+      "predicted": 191368.34796973548
+    },
+    {
+      "actual": 97940.38,
+      "predicted": 97901.17807056729
+    },
+    {
+      "actual": 76716.16,
+      "predicted": 76657.10682956154
+    },
+    {
+      "actual": 242946.07,
+      "predicted": 243036.32963566424
+    },
+    {
+      "actual": 252236.43,
+      "predicted": 252329.03083657273
+    },
+    {
+      "actual": 88061.08,
+      "predicted": 87705.03765636472
+    },
+    {
+      "actual": 191978.23,
+      "predicted": 191949.42588708943
+    },
+    {
+      "actual": 52601.43,
+      "predicted": 52581.80369572959
+    }
+  ]
+};

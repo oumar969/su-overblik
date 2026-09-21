@@ -1,0 +1,25 @@
+{
+  "kontrolleret": "2026-09-20",
+  "almindeligt_laan": {
+    "aar": 2026,
+    "maks_pr_maaned": "3799.00",
+    "gyldig_fra": "2026-01-01",
+    "gyldig_til": "2026-12-31",
+    "kilde": "https://www.su.dk/satser/satser-for-su-laan"
+  },
+  "studierente": {
+    "aarlig": "0.04",
+    "gyldighed": "Aktuel regel kontrolleret 2026-09-20; historisk ikrafttrædelsesdato ikke fastslået",
+    "kilde": "https://www.su.dk/su-laan/naar-du-skal-betale-laan-tilbage/renter-paa-dit-su-laan"
+  },
+  "tilbagebetaling": {
+    "rente_procent": "2.85",
+    "rente_gyldig_fra": "2026-07-01",
+    "gebyr": "15.00",
+    "minimum_ydelse": "200.00",
+    "kontrolleret": "2026-09-20",
+    "kilde": "https://www.borger.dk/oekonomi-skat-su/gaeld/studiegaeld/til-dig-med-su-laan",
+    "regel": "Januar i afslutningsåret + 2; normalt hver anden måned; op til 7-15 år efter gældsstørrelse.",
+    "scenarie": "Aktuel rente og gebyr holdes faste i hele fremskrivningen."
+  }
+}
