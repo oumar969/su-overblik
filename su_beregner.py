@@ -17,13 +17,17 @@ def beloeb(value):
         raise ValueError("Beløb skal være tal, fx 1500 eller 1500,50.") from exc
     if not result.is_finite() or result < 0:
         raise ValueError("Beløb skal være endelige og mindst 0.")
-    if result != result.quantize(ORE):
+    try:
+        rounded = result.quantize(ORE)
+    except InvalidOperation as exc:
+        raise ValueError("Beløbet er for stort til beregningen.") from exc
+    if result != rounded:
         raise ValueError("Beløb må højst have to decimaler.")
     return result
 
 
 def maaned(value):
-    if not re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", value):
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-(0[1-9]|1[0-2])", value):
         raise ValueError("Datoer skal skrives ÅÅÅÅ-MM, fx 2026-09.")
     year, month = map(int, value.split("-"))
     if year < 1:
@@ -104,7 +108,8 @@ def main():
         print("Gæld ved årets start:  " + kroner(repayment['startgaeld']))
         print(f"Valgt maksimal løbetid: {repayment['aar']} år (estimat ud fra gæld ved betalingsstart)")
         print(f"Ydelse hver {args.interval}. måned: " + kroner(repayment['ydelse']) + " + " + kroner(repayment['gebyr']) + " gebyr")
-        print("Budget pr. måned:      " + kroner((repayment['ydelse'] + repayment['gebyr']) / args.interval))
+        reserve = beregn_budget(0, 0, repayment)['maanedlig_reserve']
+        print("Budget pr. måned:      " + kroner(reserve))
         print("Forventet gældfri:     " + repayment['slut'])
         print("Renter efter studiet:  " + kroner(repayment['renter']))
         print("Alle nye renter:       " + kroner(sum(r['renter'] for r in rows) + repayment['renter']))

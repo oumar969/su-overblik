@@ -16,12 +16,14 @@ def loebetid(saldo):
 def tilbagebetal(gaeld, studieslut, rente=None, interval=2):
     saldo = beloeb(gaeld)
     slut = maaned(studieslut)
-    if interval not in (1, 2):
+    if type(interval) is not int or interval not in (1, 2):
         raise ValueError('Betalingsinterval skal være 1 eller 2 måneder.')
     procent = beloeb(SATSER['tilbagebetaling']['rente_procent'] if rente is None else rente)
     if procent > 100:
         raise ValueError('Scenarierenten skal være mellem 0 og 100 procent.')
     rate = procent / 100 / 12
+    # Bogfør renter som saldo * procent / 1200: den gentagne decimal i
+    # rate kan ellers flytte et præcist halvt øre under afrundingsgrænsen.
     first = (slut // 12 + 2) * 12
     rows = []
     fee = Decimal(SATSER['tilbagebetaling']['gebyr'])
@@ -29,7 +31,7 @@ def tilbagebetal(gaeld, studieslut, rente=None, interval=2):
     def row(index, interest, payment=zero, charge=zero):
         return dict(maaned=dato(index), renter=interest, betaling=payment, gebyr=charge, gaeld=saldo)
     for index in range(slut + 1, first):
-        interest = (saldo * rate).quantize(ORE, rounding=ROUND_HALF_UP)
+        interest = (saldo * procent / 1200).quantize(ORE, rounding=ROUND_HALF_UP)
         saldo += interest
         rows.append(row(index, interest))
     opening = saldo
@@ -37,11 +39,12 @@ def tilbagebetal(gaeld, studieslut, rente=None, interval=2):
     count = years * 12 // interval
     # Første betaling ved slutningen af januar, derefter hvert interval.
     discount = sum((1 + rate) ** -(1 + k * interval) for k in range(count))
-    regular = max(Decimal('200'), (saldo / discount).quantize(ORE, rounding=ROUND_CEILING)) if saldo else zero
+    minimum = Decimal(SATSER['tilbagebetaling']['minimum_ydelse'])
+    regular = max(minimum, (saldo / discount).quantize(ORE, rounding=ROUND_CEILING)) if saldo else zero
     for offset in range(years * 12):
         if not saldo:
             break
-        interest = (saldo * rate).quantize(ORE, rounding=ROUND_HALF_UP)
+        interest = (saldo * procent / 1200).quantize(ORE, rounding=ROUND_HALF_UP)
         saldo += interest
         payment = charge = zero
         if offset % interval == 0:
