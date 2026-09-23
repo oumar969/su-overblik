@@ -18,3 +18,4 @@ jobs:
       - run: node --check web/dist/features.js
       - run: node --check web/dist/calculator.js
       - run: node --check web/dist/interface.js
+      - run: node --check web/dist/chart-guide.js
