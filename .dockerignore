@@ -1,0 +1,8 @@
+**
+!Dockerfile
+!docker/
+!docker/nginx.conf
+!web/
+!web/dist/
+!web/dist/**
+web/dist/.openai/

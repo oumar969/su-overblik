@@ -21,6 +21,33 @@ Alle beregninger er estimater med dokumenterede antagelser.
 Alternativt: `python -m http.server 8000 --directory web/dist` og åbn
 http://localhost:8000. Brugerens tal beregnes i browseren og sendes ikke til en backend.
 
+## Kør med Docker
+
+Installer Docker Desktop med Linux-containere, og kør fra projektets rod:
+
+```sh
+docker compose up --build -d
+```
+
+Åbn http://localhost:8080. Stop med `docker compose down`.
+Se status med `docker compose ps` og logs med `docker compose logs`.
+
+Containeren serverer hjemmesiden med Nginx som en bruger uden root-rettigheder.
+Den bruger et skrivebeskyttet filsystem med midlertidige filer i `/tmp`.
+Kun hjemmesidens filer kopieres ind; Python-tests og modeltræning køres separat.
+ML-modellen er allerede trænet og bruges direkte i browseren.
+
+## Automatisk kontrol med GitHub Actions
+
+Ved push, pull request eller manuel start kører to jobs:
+
+- **verify:** Python-tests, 205 sammenligninger måned for måned og syntakskontrol af JavaScript.
+- **docker:** bygger imaget, starter containeren, venter på healthcheck og sammenligner de serverede filer med kildekoden. Kontrollerer også 404 for en manglende fil.
+
+Ingen ekstra secrets kræves. Workflowet udgiver ikke et container-image.
+Den eksisterende Vercel-integration udgiver fortsat hjemmesiden fra GitHub;
+den venter ikke automatisk på disse jobs. Docker er en alternativ måde at køre siden på.
+
 ## Projektstruktur
 
 | Mappe / fil | Formål |
@@ -43,7 +70,7 @@ python verify_web.py
 python web/ml/train_model.py
 ```
 
-Der er 16 tests og fem sammenligninger af browserberegningen med Python.
+Der er 22 tests og 205 sammenligninger af browserberegningen med Python.
 GitHub Actions kører dem ved push og pull requests.
 Den private Sites-demo kræver ejeradgang; den lokale udgave kan prøves uden login.
 
