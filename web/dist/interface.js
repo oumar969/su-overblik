@@ -4,7 +4,7 @@
   const main = document.querySelector('main');
   const header = document.querySelector('header');
   const intro = document.querySelector('.intro');
-  intro.innerHTML = '<div><p class="eyebrow">DIT SU-LÅN</p><h1 id="page-title" tabindex="-1">Mit overblik</h1><p id="page-description">Se, hvad dit lån betyder for dig. Prøv dine egne tal.</p></div><span class="local-badge">Kun på din enhed</span>';
+  intro.innerHTML = '<div><p class="eyebrow">DIT SU-LÅN</p><h1 id="page-title" tabindex="-1">Mit overblik</h1><p id="page-description">Se, hvad dit lån betyder for dig. Prøv dine egne tal.</p></div><span class="local-badge">Beregning på din enhed</span>';
   header.querySelector('.beta').remove();
   header.querySelector('.source-link').remove();
   const nav = document.createElement('nav');
@@ -14,6 +14,7 @@
     ['overview', 'Mit overblik', 'Se, hvad dit lån betyder for dig. Prøv dine egne tal.', '◫'],
     ['compare', 'Sammenlign', 'Hvad sker der, hvis du ændrer dit lån?', '⇄'],
     ['learn', 'Forstå dit lån', 'Små forklaringer, så du kan træffe dit eget valg.', '?'],
+    ['chat', 'Spørg Bo', 'Få en forklaring med hjælp fra AI.', '◇'],
     ['lab', 'ML-lab', 'Et åbent eksperiment med simulerede data.', '⌘']
   ];
   for (const [id, label, , icon] of views) {
@@ -31,7 +32,7 @@
   const workspace = document.querySelector('.workspace');
   workspace.id = 'overview';
   workspace.dataset.page = 'overview';
-  for (const id of ['compare', 'learn', 'lab']) {
+  for (const id of ['compare', 'learn', 'lab', 'chat']) {
     const panel = document.createElement('section');
     panel.id = id;
     panel.dataset.page = id;

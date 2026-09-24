@@ -202,3 +202,24 @@ Beregningen kører lokalt i browseren uden at sende indtastede beløb til en ser
 Kør `python verify_web.py` for at sammenligne fem webscenarier med Python.
 Webudgaven har sit eget Git-repository i `web` til Sites-udgivelsen.
 
+
+## Bo-chat med Groq
+
+Vercel skal fortsat bruge `web` som Root Directory og `dist` som Output Directory.
+Serverfunktionen findes i `web/api/chat.js`. I Vercel-projektet vælges Settings →
+Environment Variables: tilføj `GROQ_API_KEY` til Production og lav en Redeploy.
+Indsæt aldrig nøglen i chat, GitHub eller `web/dist`.
+`GROQ_MODEL` kan valgfrit sættes til et model-id tilgængeligt på din Groq-konto;
+standard er `llama-3.3-70b-versatile`, verificeret i Groqs modeloversigt ved implementering.
+
+Chatten returnerer et samlet svar (ingen streaming endnu). Låneplan deles kun efter
+brugerens tilvalg og genberegnes på serveren. Budgetindtægter og udgifter udelades.
+Der er ingen live søgning og ingen modelstyrede beregningsværktøjer i denne version.
+Samtalen ligger i browserhukommelsen; beskeder behandles af Vercel og Groq.
+Der logges ikke bevidst samtaleindhold i applikationen. Udbydernes egne vilkår gælder.
+
+Input og svarlængde er begrænset, og kald har timeout. Det er ikke en global
+forbrugsgrænse eller beskyttelse mod mange samtidige brugere. Behold Groq på dit
+valgte gratis abonnement og kontrollér kontoens kvoter før offentlig brug.
+Den statiske Nginx/Docker-udgave indeholder brugerfladen, men ikke chat-API'et.
+Tests bruger et falsk svar og ingen API-kvote: `node --test web/tests/*.test.js`.

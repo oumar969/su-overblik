@@ -5,3 +5,7 @@ su-overblik.tar.gz
 .sites-package-v2/
 su-overblik-v2.tar.gz
 web/.openai/
+.env
+.env.*
+!.env.example
+.vercel/
