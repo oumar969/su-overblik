@@ -210,7 +210,7 @@ Serverfunktionen findes i `web/api/chat.js`. I Vercel-projektet vælges Settings
 Environment Variables: tilføj `GROQ_API_KEY` til Production og lav en Redeploy.
 Indsæt aldrig nøglen i chat, GitHub eller `web/dist`.
 `GROQ_MODEL` kan valgfrit sættes til et model-id tilgængeligt på din Groq-konto;
-standard er `llama-3.3-70b-versatile`, verificeret i Groqs modeloversigt ved implementering.
+standard er `openai/gpt-oss-20b`, som er listet i [Groqs modeloversigt](https://console.groq.com/docs/models). Adgang og grænser afhænger af kontoen.
 
 Chatten returnerer et samlet svar (ingen streaming endnu). Låneplan deles kun efter
 brugerens tilvalg og genberegnes på serveren. Budgetindtægter og udgifter udelades.
