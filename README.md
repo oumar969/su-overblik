@@ -223,3 +223,33 @@ forbrugsgrænse eller beskyttelse mod mange samtidige brugere. Behold Groq på d
 valgte gratis abonnement og kontrollér kontoens kvoter før offentlig brug.
 Den statiske Nginx/Docker-udgave indeholder brugerfladen, men ikke chat-API'et.
 Tests bruger et falsk svar og ingen API-kvote: `node --test web/tests/*.test.js`.
+
+## MLflow: sporbare træningsforsøg
+
+Den eksisterende browsermodel bevares. Den nye pipeline træner samme faste model
+med 5.000 syntetiske scenarier (4.000 træning / 1.000 test) i en separat mappe.
+Der foretages ingen tuning. Indfør et separat valideringssæt før fremtidigt modelvalg;
+testsættet må ikke bruges til at vælge hyperparametre.
+
+PowerShell fra projektmappen:
+
+```powershell
+python -m venv .venv-ml
+.\.venv-ml\Scripts\python.exe -m pip install -r web/ml/requirements-tracking.txt
+.\.venv-ml\Scripts\python.exe web/ml/track_experiment.py
+.\.venv-ml\Scripts\mlflow.exe ui --backend-store-uri sqlite:///.artifacts/mlflow.db --host 127.0.0.1 --port 5000
+```
+
+Åbn http://127.0.0.1:5000 for at sammenligne kørsler. Seed kan ændres med `--seed 43`.
+MLflow gemmer parametre, MAE, RMSE, største fejl, baseline, datasæt, model og rapport.
+Manifestet gemmer SHA-256 for data, generator og model samt Git-commit og om
+arbejdsmappen havde ændringer. Python-/pakkeversioner gemmes med forsøget.
+Samme seed og miljø giver samme datasæt; flydende modeltal kan variere lidt mellem platforme.
+
+Jobbet `ML experiment` træner ved ændringer i ML-koden og kan startes manuelt.
+Det afviser ikke-endelige fejlmål, MAE over eller lig 150 kr., største fejl over
+eller lig 1.500 kr. og en model, der ikke slår gennemsnitsbaselinen. Grænserne er
+regressionskontrol for dette syntetiske eksperiment, ikke garantier for virkelige data.
+Rapporter og trackingdatabase gemmes som Actions-artifacts i 30 dage, også ved fejl.
+Den lokale `.artifacts`-mappe bevarer historikken mellem kørsler; CI har en frisk
+database pr. job. Der er endnu ingen central trackingserver eller automatisk modeludgivelse.

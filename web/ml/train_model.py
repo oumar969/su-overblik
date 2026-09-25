@@ -15,10 +15,11 @@ def target(loan,months,initial):
         debt+=Decimal(str(loan))
         debt+=(debt/300).quantize(Decimal('0.01'),rounding=ROUND_HALF_UP)
     return float(debt)
-def train():
+def train(output_root=None, seed=42):
+    ROOT = Path(output_root) if output_root is not None else globals()["ROOT"]
     (ROOT/'dist').mkdir(parents=True,exist_ok=True)
     (ROOT/'ml').mkdir(parents=True,exist_ok=True)
-    rng=np.random.default_rng(42)
+    rng=np.random.default_rng(seed)
     rows=[]
     for i in range(5000):
         loan=int(rng.integers(0,3800)); months=int(rng.integers(1,85)); initial=int(rng.integers(0,100001))
@@ -31,7 +32,7 @@ def train():
     coef=np.linalg.lstsq(design[train_ids],y[train_ids],rcond=None)[0]
     predicted=np.maximum(0,design[test_ids]@coef); errors=np.abs(predicted-y[test_ids])
     baseline=float(y[train_ids].mean())
-    model={'label':'SIMULEREDE SCENARIER – IKKE PERSONDATA','seed':42,'samples':5000,'train_count':4000,'test_count':1000,'method':'Lineær regression med seks inputfeatures, trænet med mindste kvadraters metode','target':'Gæld ved studieslut i kroner med fast 4 % studierente','features':FEATURES,'means':mean.tolist(),'scales':scale.tolist(),'coefficients':coef.tolist(),'ranges':{'loan':[0,3799],'months':[1,84],'initial':[0,100000]},'metrics':{'mae':float(errors.mean()),'rmse':float(np.sqrt(np.mean(errors**2))),'max_error':float(errors.max()),'baseline_mae':float(np.mean(np.abs(baseline-y[test_ids]))),'exact_mae':0},'limitations':['Simulerede og uafhængigt uniformt fordelte input er ikke repræsentative for studerende.','Resultatet måler efterligning af en beregner, ikke betalingsrisiko.','Den præcise beregner er facit og bør bruges i produktet.','Ingen modelvalg eller tuning på testdata. Ingen dokumentation for generalisering til virkelige personer.'],'sample_predictions':[{'actual':float(y[idx]),'predicted':float(max(0,design[idx]@coef))} for idx in test_ids[:20]]}
+    model={'label':'SIMULEREDE SCENARIER – IKKE PERSONDATA','seed':seed,'samples':5000,'train_count':4000,'test_count':1000,'method':'Lineær regression med seks inputfeatures, trænet med mindste kvadraters metode','target':'Gæld ved studieslut i kroner med fast 4 % studierente','features':FEATURES,'means':mean.tolist(),'scales':scale.tolist(),'coefficients':coef.tolist(),'ranges':{'loan':[0,3799],'months':[1,84],'initial':[0,100000]},'metrics':{'mae':float(errors.mean()),'rmse':float(np.sqrt(np.mean(errors**2))),'max_error':float(errors.max()),'baseline_mae':float(np.mean(np.abs(baseline-y[test_ids]))),'exact_mae':0},'limitations':['Simulerede og uafhængigt uniformt fordelte input er ikke repræsentative for studerende.','Resultatet måler efterligning af en beregner, ikke betalingsrisiko.','Den præcise beregner er facit og bør bruges i produktet.','Ingen modelvalg eller tuning på testdata. Ingen dokumentation for generalisering til virkelige personer.'],'sample_predictions':[{'actual':float(y[idx]),'predicted':float(max(0,design[idx]@coef))} for idx in test_ids[:20]]}
     (ROOT/'dist'/'ml-model.js').write_text('window.SU_MODEL = '+json.dumps(model,ensure_ascii=False,indent=2)+';\n',encoding='utf-8')
     test_set=set(test_ids.tolist())
     with (ROOT/'dist'/'simulerede-scenarier.csv').open('w',encoding='utf-8-sig',newline='') as f:
@@ -39,4 +40,5 @@ def train():
         for i,r in enumerate(rows):writer.writerow([i,'synthetic','test' if i in test_set else 'train',*r])
     (ROOT/'ml'/'evaluation.json').write_text(json.dumps(model,ensure_ascii=False,indent=2),encoding='utf-8')
     print(json.dumps(model['metrics'],indent=2))
+    return model
 if __name__=='__main__':train()

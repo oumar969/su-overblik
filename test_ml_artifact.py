@@ -22,3 +22,18 @@ class MLArtifactTests(unittest.TestCase):
             end=f'{end_index//12:04d}-{end_index%12+1:02d}'
             actual=beregn(row['initial_debt_dkk'],row['monthly_loan_dkk'],'2026-01',end)[-1]['gaeld']
             self.assertEqual(float(actual),float(row['target_debt_dkk']))
+
+class MLReproducibilityTests(unittest.TestCase):
+    def test_training_is_reproducible_and_does_not_overwrite_release(self):
+        import importlib.util
+        import tempfile
+        spec=importlib.util.spec_from_file_location('trainer', 'web/ml/train_model.py')
+        trainer=importlib.util.module_from_spec(spec);spec.loader.exec_module(trainer)
+        released=Path('web/dist/ml-model.js').read_bytes()
+        with tempfile.TemporaryDirectory() as temp:
+            first=Path(temp)/'first';second=Path(temp)/'second'
+            a=trainer.train(first);b=trainer.train(second)
+            self.assertEqual(a,b)
+            self.assertEqual((first/'dist/simulerede-scenarier.csv').read_bytes(),(second/'dist/simulerede-scenarier.csv').read_bytes())
+            self.assertAlmostEqual(a['metrics']['mae'],json.loads(Path('web/ml/evaluation.json').read_text(encoding='utf-8'))['metrics']['mae'],places=6)
+        self.assertEqual(released,Path('web/dist/ml-model.js').read_bytes())

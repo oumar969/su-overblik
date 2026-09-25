@@ -9,3 +9,5 @@ web/.openai/
 .env.*
 !.env.example
 .vercel/
+.venv-ml/
+.artifacts/
