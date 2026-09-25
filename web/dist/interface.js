@@ -13,6 +13,7 @@
   const views = [
     ['overview', 'Mit overblik', 'Se, hvad dit lån betyder for dig. Prøv dine egne tal.', '◫'],
     ['compare', 'Sammenlign', 'Hvad sker der, hvis du ændrer dit lån?', '⇄'],
+    ['whatif', 'Hvad nu hvis?', 'Undersøg renter og dit budget efter studiet.', '↗'],
     ['learn', 'Forstå dit lån', 'Små forklaringer, så du kan træffe dit eget valg.', '?'],
     ['lab', 'ML-lab', 'Et åbent eksperiment med simulerede data.', '⌘']
   ];
@@ -31,7 +32,7 @@
   const workspace = document.querySelector('.workspace');
   workspace.id = 'overview';
   workspace.dataset.page = 'overview';
-  for (const id of ['compare', 'learn', 'lab']) {
+  for (const id of ['compare', 'learn', 'lab', 'whatif']) {
     const panel = document.createElement('section');
     panel.id = id;
     panel.dataset.page = id;
