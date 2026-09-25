@@ -47,7 +47,17 @@ Serverberegnet scenarie (DKK): ${JSON.stringify(data.plan)}`;
         messages: [{role: 'system', content: system}, ...data.messages], max_completion_tokens: 700, temperature: 0.2}),
       signal: AbortSignal.timeout(25000)
     });
-    if (!response.ok) return res.status(response.status === 429 ? 429 : 502).json({error: response.status === 429 ? 'Groqs grænse er nået. Prøv igen senere.' : 'Bo kunne ikke svare. Kontrollér Groq-opsætningen, eller prøv senere.'});
+    if (!response.ok) {
+      // Never expose upstream messages: they can include request or account details.
+      const errors = {
+        400: 'Groq afviser forespørgslen. Kontrollér den valgte model (GROQ_MODEL).',
+        401: 'Groq afviser API-nøglen. Opdatér GROQ_API_KEY i Vercel, og lav en Redeploy.',
+        403: 'Groq giver ikke adgang. Kontrollér kontoens modelrettigheder.',
+        404: 'Den valgte Groq-model findes ikke eller er ikke tilgængelig for kontoen.',
+        429: 'Groqs grænse er nået. Prøv igen senere.'
+      };
+      return res.status(response.status === 429 ? 429 : 502).json({error: errors[response.status] || 'Groq er midlertidigt utilgængelig. Prøv senere.'});
+    }
     const answer = (await response.json()).choices?.[0]?.message?.content;
     if (typeof answer !== 'string' || !answer.trim()) throw Error();
     return res.status(200).json({answer});
