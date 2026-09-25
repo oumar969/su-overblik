@@ -30,3 +30,30 @@ test('server hides missing credentials and forwards only validated messages', as
     assert.equal(res.code,429); assert.ok(!JSON.stringify(res).includes('test-only'));
   } finally { global.fetch=originalFetch; if(originalKey===undefined) delete process.env.GROQ_API_KEY; else process.env.GROQ_API_KEY=originalKey; }
 });
+
+test('tool validates arguments and returns calculator values in ore', () => {
+ const input={loan:1500,debt:0,start:'2026-09',end:'2029-06',rate:2.85,interval:2};
+ const call=value=>({type:'function',function:{name:'calculate_scenario',arguments:JSON.stringify(value)}});
+ const result=handler.executeScenario(call(input));
+ assert.equal(result.debt,5408707);
+ assert.throws(()=>handler.executeScenario(call({...input,loan:true})));
+ assert.throws(()=>handler.executeScenario(call({...input,loan:4000})));
+ assert.throws(()=>handler.executeScenario(call({...input,end:'2020-01'})));
+ assert.throws(()=>handler.executeScenario(call({...input,net:10000})));
+ assert.throws(()=>handler.executeScenario({type:'function',function:{name:'unknown',arguments:'{}'}}));
+});
+
+test('API executes a model tool request and returns a reviewable scenario', async () => {
+ const oldFetch=global.fetch, oldKey=process.env.GROQ_API_KEY;
+ try {
+  process.env.GROQ_API_KEY='test-only';
+  global.fetch=async (url,options)=>{
+   assert.equal(JSON.parse(options.body).tools[0].function.name,'calculate_scenario');
+   return {ok:true,json:async()=>({choices:[{message:{tool_calls:[{type:'function',function:{name:'calculate_scenario',arguments:JSON.stringify({loan:1500,debt:0,start:'2026-09',end:'2029-06',rate:2.85,interval:2})}}]}}]})};
+  };
+  const res=response();
+  await handler({method:'POST',body:{messages:[{role:'user',content:'Beregn mit eksempel'}]}},res);
+  assert.equal(res.code,200); assert.equal(res.body.scenario.debt,5408707);
+  assert.match(res.body.answer,/Brug scenariet/);
+ } finally {global.fetch=oldFetch;if(oldKey===undefined) delete process.env.GROQ_API_KEY;else process.env.GROQ_API_KEY=oldKey;}
+});

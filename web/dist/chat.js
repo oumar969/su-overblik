@@ -41,6 +41,32 @@
     item.append(label, text); log.append(item);
     log.scrollTop = log.scrollHeight;
   }
+  function scenarioCard(scenario) {
+    const input = {};
+    for (const key of ['loan','debt','start','end','rate','interval']) input[key] = scenario.input[key];
+    const result = SU.calculate(input);
+    const card = document.createElement('div'); card.className = 'chat-message scenario-card';
+    const title = document.createElement('strong'); title.textContent = 'Beregnet forslag';
+    const details = document.createElement('p');
+    details.textContent = `${exact(Number(input.loan)*100)} pr. måned · ${input.start} til ${input.end}. Startgæld: ${exact(Number(input.debt)*100)}. Efter studiet: ${input.rate} % scenarierente, betaling hver ${input.interval} måned(er).`;
+    const numbers = document.createElement('p');
+    numbers.textContent = `Gæld ved studieslut: ${exact(result.study.debt)}. Heraf renter under studiet: ${exact(result.study.interest)}. Månedlig reserve: ${exact(result.payment.maxPayment/result.interval)}.`;
+    const note = document.createElement('p'); note.className = 'hint'; note.textContent = 'Samme antagelser som beregneren. Ikke en officiel betalingsplan.';
+    const apply = document.createElement('button'); apply.type = 'button'; apply.textContent = 'Brug scenariet';
+    apply.addEventListener('click', () => {
+      try {
+        const calculator = document.getElementById('calculator');
+        const merged = {...Object.fromEntries(new FormData(calculator)), ...input};
+        const updated = SU.calculate(merged);
+        for (const key of Object.keys(input)) calculator.elements[key].value = input[key];
+        document.getElementById('loan-range').value = input.loan;
+        render(updated); location.hash = 'overview';
+        apply.textContent = 'Scenariet er anvendt'; apply.disabled = true;
+        status.textContent = 'Din plan og graf er opdateret.';
+      } catch { status.textContent = 'Scenariet kunne ikke anvendes. Kontrollér formularens værdier.'; }
+    });
+    card.append(title, details, numbers, note, apply); log.append(card); log.scrollTop = log.scrollHeight;
+  }
   form.addEventListener('submit', async event => {
     event.preventDefault();
     const content = question.value.trim(); if (!content || send.disabled) return;
@@ -57,7 +83,8 @@
       if (!response.ok) throw Error(data.error || 'Chatten kræver serveren på Vercel. Den er ikke tilgængelig i den statiske Docker-udgave.');
       if (typeof data.answer !== 'string') throw Error('Svaret kunne ikke læses.');
       bubble('user', content); bubble('assistant', data.answer);
-      messages = [...next, {role: 'assistant', content: data.answer.slice(0,1200)}];
+      if (data.scenario) scenarioCard(data.scenario);
+      messages = [...next, {role: 'assistant', content: (data.answer + (data.scenario ? '\nBeregnede scenarieinput: ' + JSON.stringify(data.scenario.input) : '')).slice(0,1200)}];
       question.value = ''; status.textContent = '';
     } catch (error) { status.textContent = error.name === 'TimeoutError' ? 'Svaret tog for lang tid. Prøv igen.' : error.message; }
     finally { send.disabled = clear.disabled = false; }

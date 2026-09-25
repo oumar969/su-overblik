@@ -214,7 +214,7 @@ standard er `openai/gpt-oss-20b`, som er listet i [Groqs modeloversigt](https://
 
 Chatten returnerer et samlet svar (ingen streaming endnu). Låneplan deles kun efter
 brugerens tilvalg og genberegnes på serveren. Budgetindtægter og udgifter udelades.
-Der er ingen live søgning og ingen modelstyrede beregningsværktøjer i denne version.
+Bo kan kalde calculate_scenario med seks validerede inputfelter. Ét værktøjskald pr. svar; resultatet vises direkte i et beregnet kort uden en ekstra modelrunde. Brugeren anvender selv scenariet med en knap. Budgettal bevares lokalt. Der er ingen live søgning.
 Samtalen ligger i browserhukommelsen; beskeder behandles af Vercel og Groq.
 Der logges ikke bevidst samtaleindhold i applikationen. Udbydernes egne vilkår gælder.
 
@@ -223,3 +223,4 @@ forbrugsgrænse eller beskyttelse mod mange samtidige brugere. Behold Groq på d
 valgte gratis abonnement og kontrollér kontoens kvoter før offentlig brug.
 Den statiske Nginx/Docker-udgave indeholder brugerfladen, men ikke chat-API'et.
 Tests bruger et falsk svar og ingen API-kvote: `node --test web/tests/*.test.js`.
+
