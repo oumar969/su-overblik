@@ -223,4 +223,3 @@ forbrugsgrænse eller beskyttelse mod mange samtidige brugere. Behold Groq på d
 valgte gratis abonnement og kontrollér kontoens kvoter før offentlig brug.
 Den statiske Nginx/Docker-udgave indeholder brugerfladen, men ikke chat-API'et.
 Tests bruger et falsk svar og ingen API-kvote: `node --test web/tests/*.test.js`.
-
